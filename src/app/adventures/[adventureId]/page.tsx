@@ -1,10 +1,11 @@
 "use client";
 
-import Image from 'next/image'
-import { useState } from 'react'
+import Image from 'next/image';
+import { useState } from 'react';
 import { useAction, useQuery } from "convex/react";
 import { api } from '../../../../convex/_generated/api';
 import { Id } from '../../../../convex/_generated/dataModel';
+import HeartIcon from '../../../../public/icon-color-heart.svg';
 
 export default function Adventure(props: {params: {adventureId: Id<'adventures'>}}) {
   const handlePlayerAction = useAction(api.chat.handlePlayerAction);
@@ -13,6 +14,7 @@ export default function Adventure(props: {params: {adventureId: Id<'adventures'>
     adventureId: adventureId,
   });
   const [message, setMessage] = useState('')
+  const lastEntry = entries && entries[entries.length - 1];
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24 bg-black">
@@ -31,7 +33,6 @@ export default function Adventure(props: {params: {adventureId: Id<'adventures'>
           </div>
           <form onSubmit={(e) => {
             e.preventDefault();
-            // TODO convex action
             setMessage('')
             handlePlayerAction({message, adventureId: adventureId})
           }}>
@@ -45,7 +46,21 @@ export default function Adventure(props: {params: {adventureId: Id<'adventures'>
               <button className='bg-white text-black rounded mx-2 p-2'>Submit</button>
           </form>
         </div>
-
+        <div>
+        {((lastEntry && lastEntry.imageUrl) ? (
+           <div>
+            <Image width={350} height={350} alt='picture of adventure' src={lastEntry.imageUrl} />
+           </div>
+            ) : (
+           <span>loading...</span>)
+          )}
+          <div className='flex items-center'>
+            <h1> HP: </h1>
+            {new Array(lastEntry?.health).fill('').map((e,index) => {
+              return <Image alt="heart icon" key={index} src={HeartIcon} height={30} width={30}/>
+            })}
+          </div>
+          </div>
       </div>
     </main>
   )

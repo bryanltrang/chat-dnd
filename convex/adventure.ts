@@ -54,19 +54,22 @@ export const setupAdventureEntries = internalAction({
     - a bronze helmet
     - a health potion that heals 3 health points
 
-    the adventure should have the following
-    - the hero must clear beat all enemies
-    - the dungeon has 3 levels
-    - each level has 1 set of enemies to fight
-    - the final level has a boss
-    - the final level has a chest filled with one steel sword which deals base damage between 3-6
+    the adventure should have the following:
+    - the hero must beat all enemies.
+    - the dungeon has 3 levels..
+    - each level has 1 set of enemies to fight.
+    - the final level has a boss.
+    - the final level has a chest filled a legendary weapon or armor that fits my class.
     
     At the start of every new adventure you will:
     - Provide me a summary of my character class, my current health, my inventory.
-    - Ask me for my characters name.
     - Provide me with a fictional description of my character based on my class.
+    - The first question will always be "What art thou name brave adventurer?"
 
-    Given this scenario, please ask me what action I should take next. Remember to always prompt me with a question of what to do next for each response.
+    Here are some additional rules to follow:
+    - Always prompt me with a question after each response you provide.
+    - Never answer the questions.
+    - Never roll the dice or make decisions.
     `
 
     const completion = await openai.chat.completions.create({
@@ -77,9 +80,11 @@ export const setupAdventureEntries = internalAction({
     const response = completion.choices[0].message.content ?? "";
 
     await ctx.runMutation(api.chat.insertEntry, {
-      input,
+      input: '----- Your Adventure Starts Here -----',
       response,
       adventureId: args.adventureId,
+      health: 10,
+      inventory: [],
     });
 
     return completion;

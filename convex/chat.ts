@@ -34,7 +34,9 @@ export const handlePlayerAction = action({
       input,
       response,
       adventureId: args.adventureId,
-    })
+      health: 10,
+      inventory: [],
+    });
 
   },
 });
@@ -43,14 +45,29 @@ export const insertEntry = mutation({
   args: {
     input: v.string(),
     response: v.string(),
-    adventureId: v.id('adventures')
+    adventureId: v.id('adventures'),
+    health: v.number(),
+    inventory: v.array(v.string()),
   },
   handler: async (ctx, args) => {
-    await ctx.db.insert("entries", {
+    const entryId = await ctx.db.insert("entries", {
       input: args.input,
       response: args.response,
       adventureId: args.adventureId,
+      health: args.health,
+      inventory: args.inventory,
     });
+
+    await ctx.scheduler.runAfter(0 ,api.visualize.visualizLastestEntries, {
+      adventureId: args.adventureId,
+      entryId: entryId,
+    });
+
+    await ctx.scheduler.runAfter(0 ,api.inventory.summarizeInventory, {
+      adventureId: args.adventureId,
+      entryId: entryId,
+    });
+
   }
 })
 

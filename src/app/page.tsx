@@ -1,45 +1,37 @@
-"use client";
+"use client"
 
-import Image from 'next/image'
-import { useState } from 'react'
-import { useAction, useQuery } from "convex/react";
-import { api } from '../../convex/_generated/api';
+import { useMutation } from 'convex/react'
+import React, { MouseEventHandler, useState } from 'react'
+import { api } from '../../convex/_generated/api'
+import { useRouter } from 'next/navigation';
 
-export default function Home() {
-  const handlePlayerAction = useAction(api.chat.handlePlayerAction);
-  const entries = useQuery(api.chat.getAllEntries);
-  const [message, setMessage] = useState('')
+export default function Main() {
+  const createAdventure = useMutation(api.adventure.createAdventure);
+  const router = useRouter();
+  const [characterClass, setCharacterClass] = useState('');
+
+
+  const handleClassClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const buttonText = (e.target as HTMLElement).innerText;
+    setCharacterClass(buttonText);
+  }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24 bg-black">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-
-        <div className='flex flex-col'>
-          <div className='bg-white rounded-xl h-[400px] w-[500px] mb-2 p-2 overflow-y-auto'>
-            {entries?.map((entry) => {
-              return (
-              <div className='flex flex-col gap-2 text-black mb-2' key={entry._id}>
-                  <div> {entry.input} </div>
-                  <div> {entry.response} </div>
-              </div>
-              )
-            })}
-          </div>
-          <form onSubmit={(e) => {
-            e.preventDefault();
-            // TODO convex action
-            setMessage('')
-            handlePlayerAction({message})
-          }}>
-              <input name="message" 
-              value={message} 
-              onChange={(e) => setMessage(e.target.value)}
-              />
-              <button className='bg-white rounded-l mx-2 p-2'>Submit</button>
-          </form>
-        </div>
-
+    <div className='flex justify-center item-center w-full h-screen'>
+      <div className='flex flex-col'>
+        <h1 className='text-center'>{characterClass === '' ? 'Choose a class' : `You selected ${characterClass}. Your adventure awaits...`}</h1>
+        <button onClick={handleClassClick}>Warrior</button>
+        <button onClick={handleClassClick}>Wizard</button>
+        <button onClick={handleClassClick}>Ranger</button>
+        <button
+        disabled={characterClass === '' ? true : false}
+        onClick={async () => {
+          const adventureId = await createAdventure({characterClass});
+          router.push(`/adventures/${adventureId}`)
+        }}
+        >Start an Adventure
+        </button>
       </div>
-    </main>
+    </div>
   )
 }

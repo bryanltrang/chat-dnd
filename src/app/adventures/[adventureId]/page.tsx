@@ -1,11 +1,12 @@
 "use client";
 
 import Image from 'next/image';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useAction, useQuery } from "convex/react";
 import { api } from '../../../../convex/_generated/api';
 import { Id } from '../../../../convex/_generated/dataModel';
 import HeartIcon from '../../../../public/icon-color-heart.svg';
+import ReactDice, { ReactDiceRef } from 'react-dice-complete'
 
 export default function Adventure(props: {params: {adventureId: Id<'adventures'>}}) {
   const handlePlayerAction = useAction(api.chat.handlePlayerAction);
@@ -17,7 +18,13 @@ export default function Adventure(props: {params: {adventureId: Id<'adventures'>
     adventureId,
   });
   const [message, setMessage] = useState('')
+  const [rolled, setRolled] = useState(false)
   const lastEntry = entries && entries[entries.length - 1];
+  const reactDice = useRef<ReactDiceRef>(null);
+
+  const rollDone = (totalValue: number, values: number[]) => {
+    if (rolled) setMessage(`I rolled a ${totalValue}!`);
+  }
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24 bg-black">
@@ -39,12 +46,23 @@ export default function Adventure(props: {params: {adventureId: Id<'adventures'>
             setMessage('')
             handlePlayerAction({message, adventureId: adventureId})
           }}>
+              <div onClick={() => setRolled(true)}>
+                <ReactDice
+                  dotColor='#000000'
+                  faceColor='#ffffff'
+                  numDice={1}
+                  ref={reactDice}
+                  rollDone={rollDone}
+                  dieSize={30}
+                  rollTime={1}
+                />
+              </div>
               <input 
-              className='text-black w-[400px] h-[40px] rounded p-2' 
-              name="message" 
-              placeholder='type your response here'
-              value={message} 
-              onChange={(e) => setMessage(e.target.value)}
+                className='text-black w-[400px] h-[40px] rounded p-2' 
+                name="message" 
+                placeholder='type your response here'
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
               />
               <button className='bg-white text-black rounded mx-2 p-2'>Submit</button>
           </form>

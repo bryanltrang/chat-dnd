@@ -38,17 +38,20 @@ export const visualizLastestEntries = action({
     const imageDescription = completion.choices[0].message.content ?? "";
     console.log('image description:', imageDescription);
 
-    const imageResponse = await openai.images.generate({
+    const openaiResponse = await openai.images.generate({
       prompt: imageDescription,
       n: 1,
       size: "512x512",
     });
 
-    const image_url: string = imageResponse.data[0].url!;
+    const imageUrl: string = openaiResponse.data[0].url!;
+    const imageResponse = await fetch(imageUrl);
+    const image = await imageResponse.blob();
+    const storageId = await ctx.storage.store(image);
     
     await ctx.runMutation(internal.visualize.addEntryVisualization, {
       entryId: args.entryId,
-      imageUrl: image_url,
+      imageUrl: await ctx.storage.getUrl(storageId) ?? '',
     });
   }
 })
@@ -79,17 +82,20 @@ export const generateInventoryIcon = internalAction({
 
     if (item) return;
 
-    const imageResponse = await openai.images.generate({
+    const openaiResponse = await openai.images.generate({
       prompt: args.itemName,
       n: 1,
       size: "256x256",
     });
 
-    const image_url: string = imageResponse.data[0].url!;
+    const imageUrl: string = openaiResponse.data[0].url!;
+    const imageResponse = await fetch(imageUrl);
+    const image = await imageResponse.blob();
+    const storageId = await ctx.storage.store(image);
     
     await ctx.runMutation(internal.visualize.storeItemIcon, {
       itemName: args.itemName,
-      imageUrl: image_url,
+      imageUrl: await ctx.storage.getUrl(storageId) ?? '',
       adventureId: args.adventureId,
     });
   }

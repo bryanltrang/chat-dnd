@@ -11,7 +11,10 @@ export default function Adventure(props: {params: {adventureId: Id<'adventures'>
   const handlePlayerAction = useAction(api.chat.handlePlayerAction);
   const adventureId = props.params.adventureId;
   const entries = useQuery(api.chat.getAllEntries, {
-    adventureId: adventureId,
+    adventureId,
+  });
+  const inventoryItems = useQuery(api.inventory.getAllItems, {
+    adventureId,
   });
   const [message, setMessage] = useState('')
   const lastEntry = entries && entries[entries.length - 1];
@@ -52,12 +55,23 @@ export default function Adventure(props: {params: {adventureId: Id<'adventures'>
             <Image width={350} height={350} alt='picture of adventure' src={lastEntry.imageUrl} />
            </div>
             ) : (
-           <span>loading...</span>)
+           <span className='text-white'>loading...</span>)
           )}
           <div className='flex items-center'>
-            <h1> HP: </h1>
-            {new Array(lastEntry?.health).fill('').map((e,index) => {
-              return <Image alt="heart icon" key={index} src={HeartIcon} height={30} width={30}/>
+            <h1 className='text-white'> HP: {lastEntry?.health} </h1>
+            {new Array(lastEntry?.health).fill('').map((e,idx) => {
+              return <Image alt="heart icon" key={idx} src={HeartIcon} height={30} width={30}/>
+            })}
+          </div>
+            <h1 className='text-white'>Inventory:</h1>
+          <div className='flex text-white'>
+            {inventoryItems?.map((item, idx) => {
+              return (
+              <div key={item._id}>
+                <p> {item.itemName}</p>
+                {item.imageUrl && <Image  alt="icon of inventory item" src={item.imageUrl} width={70} height={70}/>}
+              </div>
+              )
             })}
           </div>
           </div>

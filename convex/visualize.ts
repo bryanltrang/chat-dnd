@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { action, internalMutation, internalQuery, mutation, query } from "./_generated/server";
+import { action, internalAction, internalMutation, internalQuery, mutation, query } from "./_generated/server";
 import { api, internal } from '../convex/_generated/api';
 
 import OpenAI from 'openai';
@@ -63,5 +63,69 @@ export const addEntryVisualization = internalMutation({
     await ctx.db.patch(args.entryId, {
       imageUrl: args.imageUrl,
     })
+  }
+})
+
+export const generateInventoryIcon = internalAction({
+  args: {
+    itemName: v.string(),
+    adventureId: v.id('adventures'),
+  },
+  handler: async (ctx, args) => {
+
+    const item = await ctx.runQuery(internal.visualize.getItemByName, {
+      itemName: args.itemName,
+    })
+
+    if (item) return;
+
+    const imageResponse = await openai.images.generate({
+      prompt: args.itemName,
+      n: 1,
+      size: "256x256",
+    });
+
+    const image_url: string = imageResponse.data[0].url!;
+    
+    await ctx.runMutation(internal.visualize.storeItemIcon, {
+      itemName: args.itemName,
+      imageUrl: image_url,
+      adventureId: args.adventureId,
+    });
+  }
+});
+
+export const storeItemIcon = internalMutation({
+  args:{
+    itemName: v.string(),
+    imageUrl: v.string(),
+    adventureId: v.id('adventures'),
+  },
+  handler: async (ctx, args) => {
+
+    const item =  await ctx.db
+    .query("items")
+    .filter((q => q.eq(q.field('itemName'), args.itemName)))
+    .first();
+
+    if (!item) {
+      await ctx.db.insert("items", {
+        itemName: args.itemName,
+        imageUrl: args.imageUrl,
+        adventureId: args.adventureId,
+      });
+    }
+  }
+
+})
+
+export const getItemByName = internalQuery({
+  args: {
+    itemName: v.string(),
+  },
+  handler: async (ctx,args) => {
+    const item = await ctx.db.query('items').filter((q) => q.eq(q.field('itemName'), args.itemName)).first();
+
+    return item;
   }
 })

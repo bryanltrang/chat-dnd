@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { action, internalMutation, internalQuery, mutation, query } from "./_generated/server";
+import { action, internalAction, internalMutation, internalQuery, mutation, query } from "./_generated/server";
 import { api, internal } from '../convex/_generated/api';
 
 import OpenAI from 'openai';
@@ -54,8 +54,18 @@ export const summarizeInventory = action({
       health: stats.health,
       inventory: stats.inventory,
     })
+
+    await Promise.all(
+      stats.inventory.map((itemName: string) => {
+        return ctx.runAction(internal.visualize.generateInventoryIcon, {
+          itemName,
+          adventureId: args.adventureId,
+        })
+      })
+    )
+
   }
-})
+});
 
 
 export const storeStatsIntoEntry = internalMutation({
@@ -70,4 +80,17 @@ export const storeStatsIntoEntry = internalMutation({
       inventory: args.inventory,
     })
   }
-})
+});
+
+
+export const getAllItems = query({
+  args: {
+    adventureId: v.id('adventures'),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+    .query('items')
+    .filter((q) => q.eq(q.field('adventureId'), args.adventureId))
+    .collect();
+  }
+});

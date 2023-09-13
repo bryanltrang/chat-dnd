@@ -70,6 +70,7 @@ export const setupAdventureEntries = internalAction({
     - Always prompt me with a question after each response you provide.
     - Never answer the questions.
     - Never roll the dice or make decisions.
+    - Always require a dice roll for each attack.
     `
 
     const completion = await openai.chat.completions.create({

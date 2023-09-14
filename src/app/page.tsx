@@ -10,6 +10,9 @@ import WarriorImg from '/public/warrior.png';
 import WizardImg from '/public/wizard.png';
 import DnDLogo from '/public/chat_dnd_logo_dark.svg';
 import Image from 'next/image';
+import posthog from 'posthog-js'
+
+posthog.init('phc_bmTvu0UiTtuz3qQdqBrxQQJlcV3nM61XOjRfZ0DtJk8', { api_host: 'https://app.posthog.com' })
 
 export default function Main() {
   const createAdventure = useMutation(api.adventure.createAdventure);
@@ -43,6 +46,7 @@ Consider well, for your journey begins when you select your class.
       Consider well, for your journey begins when you select your class.`)
     } else {
     setCharacterClass(character);
+    posthog.capture('character select', { property: `${character}` })
   }
   };
 
@@ -50,7 +54,7 @@ Consider well, for your journey begins when you select your class.
     <section className='flex justify-center w-full h-screen'>
       <div className='flex flex-col items-center max-w-6xl z-10 mt-12'>
         <Image src={DnDLogo} width={300} alt="icon of dnd logo"/>
-        <h1 className='mb-8 mt-2 text-center max-w-3xl'>{title}</h1>
+        <h1 className='mb-8 mt-2 text-center max-w-3xl text-white'>{title}</h1>
         <button
           className='px-8 py-2 bg-yellow-600 rounded mb-5 hover:bg-yellow-700 cursor-pointer disabled:bg-slate-300 disabled:text-slate-400'
           disabled={characterClass === '' ? true : false}

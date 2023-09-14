@@ -19,6 +19,7 @@
     "next": "13.4.19",
     "openai": "^4.6.0",
     "postcss": "8.4.29",
+    "posthog-js": "^1.78.5",
     "react": "18.2.0",
     "react-dice-complete": "^2.2.0",
     "react-dom": "18.2.0",

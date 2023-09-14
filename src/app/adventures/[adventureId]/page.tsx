@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import Image from 'next/image';
 import { useRef, useState } from 'react';
@@ -27,16 +27,19 @@ export default function Adventure(props: {params: {adventureId: Id<'adventures'>
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24 bg-black">
+    <section className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-
         <div className='flex flex-col'>
-          <div className='bg-white rounded-xl h-[450px] w-[600px] mb-2 p-2 overflow-y-auto'>
+          <div className="rounded h-[450px] w-[550px] mb-2 p-2 overflow-y-auto bg-cover" style={{backgroundImage: `url(/scroll-image.svg)`}}>
             {entries?.map((entry) => {
                 return (
-                <div className='flex flex-col gap-2 text-black mb-2' key={entry._id}>
-                    <div> {entry.input.includes(`You are a dungeon master that will run a text based adventure RPG for me.`) ? ""  : entry.input} </div>
-                    <div> {entry.response} </div>
+                <div className='absolute flex flex-col gap-2 text-black mb-2' key={entry._id}>
+                    <div> 
+                      <p>
+                        {entry.input.includes(`You are a dungeon master that will run a text based adventure RPG for me.`) ? ""  : entry.input} 
+                      </p>
+                    </div>
+                    <div><p> {entry.response} </p></div>
                 </div>
                 )
 
@@ -95,6 +98,6 @@ export default function Adventure(props: {params: {adventureId: Id<'adventures'>
           </div>
           </div>
       </div>
-    </main>
+    </section>
   )
 }

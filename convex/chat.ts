@@ -34,8 +34,8 @@ export const handlePlayerAction = action({
       input,
       response,
       adventureId: args.adventureId,
-      health: 10,
-      inventory: [],
+      health: entries[entries.length - 1].health!,
+      inventory: entries[entries.length-1].inventory!,
     });
 
   },
@@ -58,7 +58,7 @@ export const insertEntry = mutation({
       inventory: args.inventory,
     });
 
-    await ctx.scheduler.runAfter(0 ,api.visualize.visualizLastestEntries, {
+    await ctx.scheduler.runAfter(0 ,api.visualize.visualizeLastestEntries, {
       adventureId: args.adventureId,
       entryId: entryId,
     });

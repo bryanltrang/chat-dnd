@@ -33,12 +33,13 @@ export default function Adventure(props: {params: {adventureId: Id<'adventures'>
         <div className='flex flex-col'>
           <div className='bg-white rounded-xl h-[450px] w-[600px] mb-2 p-2 overflow-y-auto'>
             {entries?.map((entry) => {
-              return (
-              <div className='flex flex-col gap-2 text-black mb-2' key={entry._id}>
-                  <div> {entry.input} </div>
-                  <div> {entry.response} </div>
-              </div>
-              )
+                return (
+                <div className='flex flex-col gap-2 text-black mb-2' key={entry._id}>
+                    <div> {entry.input.includes(`You are a dungeon master that will run a text based adventure RPG for me.`) ? ""  : entry.input} </div>
+                    <div> {entry.response} </div>
+                </div>
+                )
+
             })}
           </div>
           <form onSubmit={(e) => {

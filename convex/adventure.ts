@@ -56,7 +56,7 @@ export const setupAdventureEntries = internalAction({
 
     the adventure should have the following:
     - the hero must beat all enemies.
-    - the dungeon has 3 levels..
+    - the dungeon has 3 levels.
     - each level has 1 set of enemies to fight.
     - the final level has a boss.
     - the final level has a chest filled a legendary weapon or armor that fits my class.
@@ -81,7 +81,7 @@ export const setupAdventureEntries = internalAction({
     const response = completion.choices[0].message.content ?? "";
 
     await ctx.runMutation(api.chat.insertEntry, {
-      input: '----- Your Adventure Starts Here -----',
+      input,
       response,
       adventureId: args.adventureId,
       health: 10,

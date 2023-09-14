@@ -7,7 +7,7 @@ import OpenAI from 'openai';
 const openai = new OpenAI();
 
 
-export const visualizLastestEntries = action({
+export const visualizeLastestEntries = action({
   args: {
     adventureId: v.id('adventures'),
     entryId: v.id('entries'),

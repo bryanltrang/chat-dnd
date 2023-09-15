@@ -96,3 +96,17 @@ export const getEntriesForAdventure = internalQuery({
     return entries;
   },
 })
+
+export const getAdventureData = query({
+  args: {
+    adventureId: v.id('adventures'),
+  },
+  handler: async (ctx, args) => {
+    const adventureInfo = await ctx.db
+    .query("adventures")
+    .filter((q) => q.eq(q.field('_id'), args.adventureId))
+    .collect();
+
+    return adventureInfo;
+  }
+})

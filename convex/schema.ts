@@ -12,6 +12,7 @@ export default defineSchema({
   }),
   adventures: defineTable({
     characterClass: v.string(),
+    imageUrl: v.optional(v.string()),
   }),
   items: defineTable({
     itemName: v.string(),

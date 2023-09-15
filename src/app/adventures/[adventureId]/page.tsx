@@ -5,7 +5,8 @@ import { useRef, useState } from 'react';
 import { useAction, useQuery } from "convex/react";
 import { api } from '../../../../convex/_generated/api';
 import { Id } from '../../../../convex/_generated/dataModel';
-import HeartIcon from '../../../../public/icon-color-heart.svg';
+import HeartIcon from '/public/icon-color-heart.svg';
+import DungeonMasterImage from '/public/dungeon-master.png';
 import ReactDice, { ReactDiceRef } from 'react-dice-complete'
 
 export default function Adventure(props: {params: {adventureId: Id<'adventures'>}}) {
@@ -17,8 +18,16 @@ export default function Adventure(props: {params: {adventureId: Id<'adventures'>
   const inventoryItems = useQuery(api.inventory.getAllItems, {
     adventureId,
   });
-  const [message, setMessage] = useState('')
-  const [rolled, setRolled] = useState(false)
+
+  const adventureInfo = useQuery(api.chat.getAdventureData, {
+    adventureId,
+  });
+
+  const adventureClass = adventureInfo && adventureInfo[0].characterClass
+  const playerIcon =  adventureInfo && adventureInfo[0].imageUrl
+
+  const [message, setMessage] = useState('');
+  const [rolled, setRolled] = useState(false);
   const lastEntry = entries && entries[entries.length - 1];
   const reactDice = useRef<ReactDiceRef>(null);
 
@@ -27,13 +36,14 @@ export default function Adventure(props: {params: {adventureId: Id<'adventures'>
   }
 
   return (
-    <section className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <div className='flex flex-col'>
-          <div className="rounded h-[450px] w-[550px] mb-2 p-2 overflow-y-auto bg-cover" style={{backgroundImage: `url(/scroll-image.svg)`}}>
+    <section className="flex min-h-screen flex-col items-center justify-center p-16">
+      <div className="z-10 max-w-7xl w-full items-center justify-center font-mono text-sm lg:flex">
+        <div className='flex flex-col relative mr-8'>
+          <Image alt='picture of evil wizard' src={DungeonMasterImage} width={800} height={500} className='absolute top-[-150px]'/>
+          <div className="z-[1] rounded h-[450px] w-[550px] mb-2 p-2 overflow-y-auto bg-cover" style={{backgroundImage: `url(/scroll-image.svg)`}}>
             {entries?.map((entry) => {
                 return (
-                <div className='absolute flex flex-col gap-2 text-black mb-2' key={entry._id}>
+                <div className='flex flex-col gap-2 text-black mb-2' key={entry._id}>
                     <div> 
                       <p>
                         {entry.input.includes(`You are a dungeon master that will run a text based adventure RPG for me.`) ? ""  : entry.input} 
@@ -45,12 +55,14 @@ export default function Adventure(props: {params: {adventureId: Id<'adventures'>
 
             })}
           </div>
-          <form onSubmit={(e) => {
+          <form 
+          className='flex items-center'
+          onSubmit={(e) => {
             e.preventDefault();
             setMessage('')
             handlePlayerAction({message, adventureId: adventureId})
           }}>
-              <div onClick={() => setRolled(true)}>
+              <div className='flex items-center justify-start' onClick={() => setRolled(true)}>
                 <ReactDice
                   dotColor='#000000'
                   faceColor='#ffffff'
@@ -68,35 +80,42 @@ export default function Adventure(props: {params: {adventureId: Id<'adventures'>
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
               />
-              <button className='bg-white text-black rounded mx-2 p-2'>Submit</button>
+              <button className='bg-yellow-600 hover:bg-yellow-700 text-white rounded mx-2 p-2'>Send</button>
           </form>
         </div>
         <div>
         {((lastEntry && lastEntry.imageUrl) ? (
-           <div>
-            <Image width={350} height={350} alt='picture of adventure' src={lastEntry.imageUrl} />
-           </div>
+           <div className="h-[300px] w-[500px] rounded bg-cover" style={{backgroundImage: `url(${lastEntry.imageUrl})`}} />
             ) : (
-           <span className='text-white'>loading...</span>)
+           <span className='text-white h-[300px] w-[500px]'>loading...</span>
+           )
           )}
+          <div className='h-[2px] bg-teal-900 my-8 rounded' />
           <div className='flex items-center'>
-            <h1 className='text-white'> HP: {lastEntry?.health} </h1>
-            {new Array(lastEntry?.health).fill('').map((e,idx) => {
-              return <Image alt="heart icon" key={idx} src={HeartIcon} height={30} width={30}/>
-            })}
+            { playerIcon && <Image className='mr-4 rounded-full' alt='picture of character class' src={playerIcon} width={50} height={50}/>}
+            <div>
+              <h2>{adventureClass}</h2>
+              <div className='flex items-center'>
+                {new Array(lastEntry?.health).fill('').map((e,idx) => {
+                  return <Image alt="heart icon" key={idx} src={HeartIcon} height={30} width={30}/>
+                })}
+                <p className='text-white'>{lastEntry?.health}/10 </p>
+              </div>
+            </div>
           </div>
-            <h1 className='text-white'>Inventory:</h1>
-          <div className='flex text-white'>
+          <div className='h-[2px] bg-teal-900 my-8 rounded' />
+          <h1 className='text-white mb-4'>Inventory</h1>
+          <div className='flex flex-col gap-4'>
             {inventoryItems?.map((item, idx) => {
               return (
-              <div key={item._id}>
+              <div className='flex items-center' key={item._id}>
+                {item.imageUrl && <Image className='mr-2 rounded-full' alt="icon of inventory item" src={item.imageUrl} width={50} height={50}/>}
                 <p> {item.itemName}</p>
-                {item.imageUrl && <Image  alt="icon of inventory item" src={item.imageUrl} width={70} height={70}/>}
               </div>
               )
             })}
           </div>
-          </div>
+        </div>
       </div>
     </section>
   )

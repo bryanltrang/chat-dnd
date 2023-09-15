@@ -11,9 +11,16 @@ export const createAdventure = mutation({
     characterClass: v.string(),
   },
   handler: async (ctx, args) => {
+
     const id = await ctx.db.insert("adventures", {
       characterClass: args.characterClass,
+      imageUrl: '',
     });
+
+    await ctx.scheduler.runAfter(0, internal.visualize.generatePlayerIcon, {
+      adventureId: id,
+      characterClass: args.characterClass,
+    })
 
     await ctx.scheduler.runAfter(0, internal.adventure.setupAdventureEntries, {
       adventureId: id,

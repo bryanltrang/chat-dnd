@@ -7,7 +7,7 @@ import OpenAI from 'openai';
 const openai = new OpenAI();
 
 
-export const visualizeLastestEntries = action({
+export const visualizeLatestEntries = action({
   args: {
     adventureId: v.id('adventures'),
     entryId: v.id('entries'),
@@ -23,14 +23,14 @@ export const visualizeLastestEntries = action({
 
     const entries = await ctx.runQuery(internal.chat.getEntriesForAdventure, {adventureId: args.adventureId});
 
-    const lastestEntry = entries[entries.length - 1].response;
+    const latestEntry = entries[entries.length - 1].response;
 
     const completion = await openai.chat.completions.create({
       messages: [{ role: 'user', content: `
       Take this content and write 2 sentences that describe what an artist should draw for a fictional book.
       
       Here is the content:
-      "${lastestEntry}"`
+      "${latestEntry}"`
     }],
       model: 'gpt-3.5-turbo',
     });

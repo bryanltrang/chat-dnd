@@ -1,5 +1,5 @@
 import Image, { StaticImageData } from 'next/image';
-import React, { use, useState } from 'react'
+import React, { useState } from 'react'
 
 type CharacterSelectProps = {
   characterClass: string;

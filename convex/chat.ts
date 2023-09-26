@@ -58,7 +58,7 @@ export const insertEntry = mutation({
       inventory: args.inventory,
     });
 
-    await ctx.scheduler.runAfter(0 ,api.visualize.visualizeLastestEntries, {
+    await ctx.scheduler.runAfter(0 ,api.visualize.visualizeLatestEntries, {
       adventureId: args.adventureId,
       entryId: entryId,
     });

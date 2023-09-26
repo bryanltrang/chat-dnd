@@ -10,9 +10,13 @@ import WarriorImg from '/public/warrior.png';
 import WizardImg from '/public/wizard.png';
 import DnDLogo from '/public/chat_dnd_logo_dark.svg';
 import Image from 'next/image';
-import posthog from 'posthog-js'
 
-posthog.init('phc_bmTvu0UiTtuz3qQdqBrxQQJlcV3nM61XOjRfZ0DtJk8', { api_host: 'https://app.posthog.com' })
+
+const characterObj: {[key: string]: any} = {
+  Warrior: WarriorImg,
+  Wizard: WizardImg,
+  Archer: ArcherImg
+}
 
 export default function Main() {
   const createAdventure = useMutation(api.adventure.createAdventure);
@@ -46,7 +50,6 @@ Consider well, for your journey begins when you select your class.
       Consider well, for your journey begins when you select your class.`)
     } else {
     setCharacterClass(character);
-    posthog.capture('character select', { property: `${character}` })
   }
   };
 
@@ -65,18 +68,16 @@ Consider well, for your journey begins when you select your class.
           >Start your Adventure
         </button>
         <div className='flex'>
-          <CharacterSelect characterClass='Warrior' 
-          imageUrl={WarriorImg} 
-          handleCharacterClick={handleCharacterClick} 
-          currCharacter={characterClass} />
-          <CharacterSelect characterClass='Wizard' 
-          imageUrl={WizardImg} 
-          handleCharacterClick={handleCharacterClick} 
-          currCharacter={characterClass} />
-          <CharacterSelect characterClass='Archer' 
-          imageUrl={ArcherImg} 
-          handleCharacterClick={handleCharacterClick} 
-          currCharacter={characterClass} />
+          {Object.keys(characterObj).map((char) => {
+            return (
+              <CharacterSelect 
+              key={char}
+              characterClass={char} 
+              imageUrl={characterObj[char]} 
+              handleCharacterClick={handleCharacterClick} 
+              currCharacter={characterClass} />
+            )
+          })}
         </div>
       </div>
     </section>

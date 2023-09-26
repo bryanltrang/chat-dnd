@@ -59,12 +59,13 @@ export const setupAdventureEntries = internalAction({
     During this time, please track my health points which will start at 10, my character class which is a ${adventure.characterClass}, and my inventory which will start with.
     - a sword
     - a bronze helmet
-    - a health potion that heals 3 health points
+    - a health potion (heals 3 health points)
 
     the adventure should have the following:
     - the hero must beat all enemies.
     - the dungeon has 3 levels.
     - each level has 1 set of enemies to fight.
+    - if I consume a health potion, remove it from my inventory
     - the final level has a boss.
     - the final level has a chest filled a legendary weapon or armor that fits my class.
     

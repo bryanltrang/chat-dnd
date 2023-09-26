@@ -1,6 +1,6 @@
 ## Project Details
 
-Chat DnD is a text-based adventure game built using Convex and Next.js. You can choose between 3 classes (Warrior, Wizard, Archer) to start your adventure.
+Chat DnD is a text-based adventure game built using OpenAI, Dall-E, Convex, and Next.js. You can choose between 3 classes (Warrior, Wizard, Archer) to start your adventure.
 
 ## Getting Started
 
